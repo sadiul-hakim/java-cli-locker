@@ -1,10 +1,11 @@
-package com.hakim;
+package com.hakim.cliApp;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
@@ -17,13 +18,24 @@ public class Main {
         System.out.println("1. Log in to account:");
         System.out.println("2. Create account.");
         Path userIn;
-        int userChoice=input.nextInt();
+        int userChoice=0;
+        try{
+            userChoice=input.nextInt();
+
+        }catch (InputMismatchException e){
+            System.out.println("Enter right option...");
+        }
+
         if(userChoice==1){
             userIn=login();
         }else if(userChoice == 2){
             userIn=register();
         }else{
             System.out.println("Invalid option.");
+            return;
+        }
+
+        if(userIn==null){
             return;
         }
 
@@ -34,7 +46,14 @@ public class Main {
         System.out.println("3. Append Locker.");
         System.out.println("4. Delete Locker/Account.");
 
-        int userAction=input.nextInt();
+        int userAction=0;
+
+        try{
+            userAction=input.nextInt();
+
+        }catch (InputMismatchException e){
+            System.out.println("Enter right option..");
+        }
 
         if(userAction == 1){
             read(userIn);
@@ -105,6 +124,7 @@ public class Main {
     private static void delete(Path path){
         try{
             Files.delete(path);
+            System.out.println("Account Deleted...");
         }catch (IOException e){
             System.out.println("System error.");
         }
@@ -116,8 +136,6 @@ public class Main {
         Path userPath=Path.of(filePath);
         Path created=null;
         try{
-
-
             created=Files.createFile(userPath);
 
         }catch (IOException e){
@@ -129,6 +147,10 @@ public class Main {
 
     private static boolean checkCode(int code){
         String cwd=System.getProperty("user.dir");
+        File dir=new File(cwd+ File.separator+"users");
+        if(!dir.exists()){
+            boolean created=dir.mkdir();
+        }
         String filePath=cwd+ File.separator+"users"+File.separator+"user-"+code+".txt";
         File file=new File(filePath);
 
@@ -144,7 +166,13 @@ public class Main {
 
     private static Path register(){
         System.out.println("Enter a secret code : ");
-        int code=input.nextInt();
+        int code=0;
+        try{
+            code=input.nextInt();
+        }catch (InputMismatchException e){
+            System.out.println("Enter code in number..");
+            return null;
+        }
         if (checkCode(code)){
             System.out.println("Locker already in use..");
             System.out.println("Try another:");
@@ -157,7 +185,14 @@ public class Main {
 
     private static Path login(){
         System.out.println("Secret code : ");
-        int code=input.nextInt();
+        int code=0;
+        try{
+            code=input.nextInt();
+
+        }catch (InputMismatchException e){
+            System.out.println("Enter right code..");
+            return null;
+        }
         boolean right=checkCode(code);
         if(!right){
             System.out.println("Invalid code..");
@@ -168,7 +203,5 @@ public class Main {
         return createPath(code);
 
     }
-
-
 
 }
